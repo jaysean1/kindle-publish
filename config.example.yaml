@@ -1,0 +1,4 @@
+# Copy to config.yaml and fill in. config.yaml stays out of Git.
+kindle_email: "your-device@kindle.com"   # amazon.com/myk -> device email
+approved_sender: "you@gmail.com"         # must be on the Amazon approved sender list
+default_output: pdf                      # pdf | epub | both
