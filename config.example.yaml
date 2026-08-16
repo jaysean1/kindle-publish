@@ -2,3 +2,5 @@
 kindle_email: "your-device@kindle.com"   # amazon.com/myk -> device email
 approved_sender: "you@gmail.com"         # must be on the Amazon approved sender list
 default_output: pdf                      # pdf | epub | both
+default_transport: auto                  # auto | email | web
+send_to_kindle_url: "https://www.amazon.com/sendtokindle"

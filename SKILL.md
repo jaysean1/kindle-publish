@@ -1,31 +1,48 @@
 ---
 name: kindle-publish
-description: Typeset a content manifest into a Kindle-native PDF (and optional EPUB), generate an AI cover, verify the render, and push it to a Kindle device by Send-to-Kindle email. Triggers on "推送到 kindle / push to kindle / kindle publish / 生成 kindle 文档 / sync to kindle". Owns style, naming, and delivery only; content collection stays with the caller.
+description: Publish prepared content or a local file to Kindle. Typeset manifests, sync supported documents, convert MOBI prose books, and rebuild image-heavy comics as Kindle-safe grayscale PDFs before Send-to-Kindle delivery. Triggers on "推送到 kindle / push to kindle / kindle publish / 生成 kindle 文档 / sync to kindle / 传到 kindle / MOBI 漫画".
 ---
 
 # kindle-publish
 
-Turn prepared content into a verified, Kindle-ready document and deliver it.
-This skill owns three specs — style, data contract, delivery. It does not
-collect, select, or schedule content; the caller supplies a manifest.
+Publish a prepared manifest or local file as a verified Kindle document.
+This skill owns formatting, conversion, validation, and delivery. It does not
+collect, select, or schedule content.
 
-## Steps
+## Route first
 
-1. **Read the manifest.** The caller supplies content that satisfies
-   `references/content-schema.md`. Reject a manifest that misses a required
-   field or has no `sources`; ask the caller once for the gap.
-2. **Name the deliverable.** Apply the naming spec in
-   `references/content-schema.md` «Titling and naming». The output filename is
-   the Kindle library title; never ship a working filename.
-3. **Generate the cover** with the host image tool, using the cover brief
-   rules in `references/style-spec.md` «Cover».
-4. **Fill `templates/kindle-doc.html`.** CSS stays untouched; content only.
-   Figures follow `references/style-spec.md` «Figures».
-5. **Render and verify.** WeasyPrint to PDF, then run the checks in
-   `references/delivery.md` «Verification». A failed check is a draft defect;
-   fix and re-render before delivery.
-6. **Deliver.** Follow `references/delivery.md` «Send». Recipient and sender
-   come from `config.yaml` next to this file; never hardcode an address.
+- **Prepared content manifest:** follow «Manifest publishing» below.
+- **Local PDF, EPUB, DOCX, HTML, MOBI, AZW, AZW3, or CBZ:** read
+  `references/local-file-sync.md` and select its route table.
+- **Image-heavy comic:** always use the comic route. A successful generic
+  EPUB conversion is not evidence that an older Kindle can open the book.
+
+## Manifest publishing
+
+1. **Read the manifest.** Require the fields in
+   `references/content-schema.md`. Reject missing required fields or an empty
+   `sources` list; ask once for the gap.
+2. **Name the deliverable.** Apply `references/content-schema.md` «Titling
+   and naming». The filename is the old-firmware library title.
+3. **Generate the cover** with the host image tool. Apply
+   `references/style-spec.md` «Cover».
+4. **Fill `templates/kindle-doc.html`.** Keep CSS unchanged. Apply
+   `references/style-spec.md` «Figures».
+5. **Render and verify.** Use WeasyPrint, then run
+   `references/delivery.md` «Verification». Fix every failed check.
+6. **Deliver.** Use `references/delivery.md` «Send». Read recipient and sender
+   from `config.yaml`; never hardcode an address.
+
+## Local file publishing
+
+1. Preserve the source.
+2. Select email, web upload, prose conversion, or comic conversion from
+   `references/local-file-sync.md`.
+3. Verify the resulting file before delivery.
+4. For web delivery, wait for Amazon status **In library**. Report
+   **Processing** as incomplete.
+5. Ask the user to open the file on the device when compatibility is the
+   reason for conversion.
 
 ## EPUB branch
 
@@ -36,5 +53,7 @@ default deliverable.
 ## Boundaries
 
 - No content pipeline: sourcing, summarising, and scheduling belong to the caller.
-- No cron or automation setup: schedulers call this skill, not the reverse.
-- One manifest, one document, one delivery.
+- No cron setup: schedulers call this skill, not the reverse.
+- Preserve every local source file.
+- A requested delivery is approval for that exact verified file. Confirm again
+  when conversion creates multiple parts or changes the requested destination.

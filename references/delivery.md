@@ -31,6 +31,8 @@ Recipient, sender, and defaults live in `config.yaml` next to `SKILL.md`:
 kindle_email: "xxx@kindle.com"   # device address, amazon.com/myk
 approved_sender: "you@gmail.com" # must be on the Amazon approved list
 default_output: pdf
+default_transport: auto           # auto: email through 20MB, web above it
+send_to_kindle_url: "https://www.amazon.com/sendtokindle"
 ```
 
 Send with the gmail skill (dry-run first, as that skill requires):
@@ -44,8 +46,11 @@ Delivery facts learned the hard way:
 
 - An unapproved sender is **silently dropped** — no bounce. First failure
   to arrive: check the approved list at amazon.com/myk before anything else.
-- Attachment limit 50MB; device needs Wi-Fi plus a manual sync
-  (⋮ → 同步我的 Kindle) to pull promptly.
+- Use email only through 20MB by default. Amazon can accept more, but the
+  configured sender can impose a lower attachment limit.
+- Use Send-to-Kindle web from 20MB through 200MB. Follow
+  `local-file-sync.md` «Web upload» and wait for **In library**.
+- The device needs Wi-Fi plus a manual sync (⋮ → 同步我的 Kindle) to pull promptly.
 - Old-firmware library tiles ignore embedded covers; the filename is the
   visible identity (hence the naming spec).
 

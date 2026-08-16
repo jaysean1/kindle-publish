@@ -1,15 +1,28 @@
 # kindle-publish
 
-An agent skill that typesets a content manifest into a Kindle-native PDF
-(optional EPUB), generates an AI cover, verifies the render, and delivers it
-by Send-to-Kindle email.
+An agent skill that publishes prepared content and local files to Kindle.
+It supports two main paths:
 
-- Style, naming, and delivery specs: `references/`
+- Manifest → Kindle-native PDF (optional EPUB), AI cover, visual checks, delivery.
+- Local file → direct sync or safe conversion. Image-heavy MOBI/EPUB/CBZ comics
+  rebuild as grayscale, single-image-page PDFs for older Kindle devices.
+
+Files:
+
+- Style, naming, local-file routing, and delivery specs: `references/`
 - Frozen page template (91×122mm, no background, thin rules): `templates/kindle-doc.html`
+- Comic converter: `scripts/manga_to_kindle_pdf.py`
 - Device address: copy `config.example.yaml` to `config.yaml` (git-ignored)
 
-Content collection is out of scope: a caller (daily digest pipeline, ad-hoc
-article task) prepares the manifest defined in `references/content-schema.md`
-and invokes this skill.
+Quick comic conversion:
 
-Verified on a 6" Kindle Paperwhite, 2026-08.
+```bash
+python3 scripts/manga_to_kindle_pdf.py book.mobi \
+  --output-dir output --title "书名-卷01" --author "作者"
+```
+
+The source file stays unchanged. The script verifies page order through first,
+middle, and last previews and splits only above the web upload threshold.
+
+Content collection and scheduling are out of scope. Verified on a 6" Kindle
+Paperwhite, 2026-08.
